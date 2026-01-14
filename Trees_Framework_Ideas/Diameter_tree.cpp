@@ -13,6 +13,13 @@
 #include<cmath>
 using namespace std ;
 
+/**
+ *  Convert int to long long to avoid signed integer overflow.
+ *  long long main(){} --> Incorrect 
+ *  signed main(){} --> Correct 
+ */
+#define int long long 
+
 int n ;
 vector<vector<int>>g ;
 vector<int>depth,parent;
