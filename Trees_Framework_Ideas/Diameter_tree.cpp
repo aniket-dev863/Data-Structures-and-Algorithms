@@ -60,11 +60,12 @@ void solve(){
             maxch=j;
     }
     DFS(maxch,0,0);
-    maxch=1;
-    for(int j =2;j<=n;j++){
+    cout<<maxch<<"\n"; // for purpose of checking 
+    for(int j =1;j<=n;j++){
         if(depth[j]>depth[maxch])
             maxch=j;
     }
+    cout<<maxch<<"\n"; // for purpose of checking 
     //Diameter
     cout<<depth[maxch]<<"\n";
 }
