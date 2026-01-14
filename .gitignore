@@ -1,0 +1,13 @@
+# Ignore all files by default
+*
+
+# Allow source files
+!*.cpp
+!*.h
+!*.hpp
+!*.md
+!.gitignore
+!README*
+
+# Allow directories
+!*/
