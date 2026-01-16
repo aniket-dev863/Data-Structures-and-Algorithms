@@ -1,0 +1,165 @@
+\# 🧠 PART 1 --- WHAT EDGE CONTRIBUTION ACTUALLY MEANS
+
+For every unordered pair of nodes \`(u, v)\` in a tree → their distance
+is \*\*the number of edges\*\* on the path between them.
+
+So:
+
+\> \*\*Each edge contributes +1 distance for some number of pairs.\*\*
+
+Your job:
+
+\`\`\` For each edge (u, v): find how many node-pairs use this edge. Sum
+all those contributions. \`\`\`
+
+\### 🌳 WHEN DOES A PAIR (a, b) USE EDGE (u, v)?
+
+If removing that edge splits the tree into two components:
+
+\`\`\` Component 1 size = s Component 2 size = n - s \`\`\`
+
+Then:
+
+\* every node in component 1 \* paired with every node in component 2 \*
+will pass through that edge
+
+Thus:
+
+\`\`\` Contribution of edge = s \* (n - s) \`\`\`
+
+\-\--
+
+\# 🧠 PART 2 --- WHY \`subsz\[x\]\` ONLY WORKS FOR CHILDREN
+
+You used:
+
+\`\`\`cpp int a = subsz\[g\[i\]\[j\]\]; int b = n -
+subsz\[g\[i\]\[j\]\]; \`\`\`
+
+This is \*\*WRONG\*\* when \`g\[i\]\[j\]\` is the \*\*parent\*\*,
+because:
+
+\### Example:
+
+\`\`\` 1 \| 2 \| 3 \`\`\`
+
+Let edge be (2--1):
+
+\* DFS(1) gives:
+
+\* subsz\[1\] = 3 \* subsz\[2\] = 2 \* subsz\[3\] = 1
+
+Now look at edge (2,1):
+
+If you do: \`subsz\[1\] = 3\` → WRONG The subtree of 1 is the entire
+tree.
+
+Correct subtree for this edge is \*\*child side\*\* → node 2 →
+\`subsz\[2\] = 2\`
+
+So:
+
+\`\`\` component sizes = 2 and 1 contribution = 2 \* 1 = 2 \`\`\`
+
+But your code would do:
+
+\`\`\` component sizes = 3 and 0 contribution = 0 → WRONG \`\`\`
+
+Thus:
+
+\> You can only use \`subsz\[child\]\`, never \`subsz\[parent\]\`.
+
+\-\--
+
+\# 🧠 PART 3 --- HOW TO FIX IT CLEANLY
+
+Very simple rule:
+
+\> \*\*Only count edges in DFS direction (parent → child).\*\*
+
+That means:
+
+\* During DFS, when you visit \`child\` from \`node\`, \* The subtree
+size \`subsz\[child\]\` is correct, \* And you should compute
+contribution \*right there\*.
+
+\-\--
+
+\# 🧠 PART 4 --- VISUAL CODE STRUCTURE (VERY IMPORTANT)
+
+\### DFS:
+
+\`\`\` DFS(u, p): subsz\[u\] = 1 for every v in g\[u\]: if v == p:
+continue
+
+DFS(v, u) subsz\[u\] += subsz\[v\]
+
+// Here (u, v) is an edge, and v is child contribution += subsz\[v\] \*
+(n - subsz\[v\]) \`\`\`
+
+THAT\'S IT. No double loops. No visited arrays. No guessing. No
+\`done\[\]\`. No adjacency scanning.
+
+\-\--
+
+\# 🧠 PART 5 --- COMPLETE CORRECT CODE (CLEAN & PERFECT)
+
+\`\`\`cpp #include \<bits/stdc++.h\> using namespace std;
+
+int n; vector\<vector\<int\>\> g; vector\<int\> subsz; long long ans =
+0;
+
+void DFS(int u, int p) { subsz\[u\] = 1; for (int v : g\[u\]) { if (v ==
+p) continue;
+
+DFS(v, u); subsz\[u\] += subsz\[v\];
+
+// v is a CHILD -\> valid split long long s = subsz\[v\]; ans += s \*
+(n - s); } }
+
+int main() { ios::sync_with_stdio(false); cin.tie(nullptr);
+
+cin \>\> n;
+
+g.assign(n + 1, {}); subsz.assign(n + 1, 0);
+
+for (int i = 0; i \< n - 1; i++) { int a, b; cin \>\> a \>\> b;
+g\[a\].push_back(b); g\[b\].push_back(a); }
+
+DFS(1, 0); cout \<\< ans \<\< \"\\n\"; return 0; } \`\`\`
+
+\-\--
+
+\# 🎯 PART 6 --- SANITY CHECK WITH EXAMPLE
+
+Tree:
+
+\`\`\` 1 \| 2 \| 3 \`\`\`
+
+DFS gives \`subsz = \[\_, 3, 2, 1\]\`
+
+Edge contributions:
+
+\* (1,2): subsz\[2\] = 2 → 2 \* 1 = 2 \* (2,3): subsz\[3\] = 1 → 1 \* 2
+= 2
+
+Total: \*\*4\*\*
+
+Distances:
+
+\* dist(1,2)=1 \* dist(2,3)=1 \* dist(1,3)=2
+
+Sum = \*\*4\*\* → correct.
+
+\-\--
+
+\# 🧠 PART 7 --- WHAT YOU SHOULD WRITE IN YOUR NOTES (VERY IMPORTANT)
+
+\> \*\*Edge-contribution only works when counting the child side of each
+edge. \> Always compute contributions inside DFS when returning from a
+child.\*\*
+
+If you remember just this one line → you will never write the buggy
+double-loop version again.
+
+\-\--
