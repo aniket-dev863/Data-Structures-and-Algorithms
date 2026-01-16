@@ -1,0 +1,51 @@
+filename: tree_diameter_bugs_report.txt
+
+-------------------------------------------------------------------------
+BUG REPORT: Tree Diameter Counting Solution
+-------------------------------------------------------------------------
+
+1. TIME LIMIT EXCEEDED (TLE)
+-------------------------------------------------------------------------
+Location: solve() function, calculation of 'ans'.
+Issue:    You used nested loops to calculate the sum of products.
+          - In the 1-Center case: Nested loops calculated pairs O(N^2).
+          - In the 2-Center case: Nested loops calculated Cartesian product O(N^2).
+          With N up to 2*10^5, O(N^2) causes TLE.
+          
+Fix:      Use algebraic simplification to calculate in O(N).
+          - 2-Centers: Sum(A) * Sum(B)
+            Mathematical property: Σ(ai * bj) = (Σai) * (Σbj)
+            
+          - 1-Center: (Sum(A)^2 - Sum(A^2)) / 2
+            Mathematical property: Σ(ai * aj) where i<j = ((Σai)^2 - Σ(ai^2)) / 2
+
+2. WRONG ANSWER (WA) - EDGE CASE D=1
+-------------------------------------------------------------------------
+Location: solve() function and DFS calls.
+Issue:    Integer division truncation.
+          When the diameter D = 1 (just two nodes connected), D/2 becomes 0.
+          Your DFS was called with depth=1 and targetDepth=0.
+          Since the DFS starts at depth 1, it never matches "depth == 0",
+          returning a count of 0 instead of 1.
+
+Fix:      Handle targetDepth == 0 explicitly.
+          If D=1 (or target=0), the count is automatically 1 (the center itself),
+          without needing to run DFS.
+
+3. WRONG ANSWER / LOGIC - DFS TERMINATION
+-------------------------------------------------------------------------
+Location: DFS() function.
+Issue:    The DFS continued to traverse deeper into the tree even after 
+          finding a node at the target depth. While not strictly a WA if 
+          logic is perfect, it is inefficient and can lead to overcounting 
+          if the counting logic isn't strictly controlled.
+
+Fix:      Add a return statement immediately after finding a node at targetDepth.
+          if (depth == targetDepth) { chD++; return; }
+
+-------------------------------------------------------------------------
+SUMMARY OF CORRECTIONS
+-------------------------------------------------------------------------
+1. Changed pair counting logic from O(N^2) loops to O(N) math formulas.
+2. Added checks for 'target == 0' to handle small diameters correctly.
+3. Added 'return' in DFS to stop recursion when depth is reached.
