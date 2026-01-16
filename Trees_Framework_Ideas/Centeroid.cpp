@@ -11,6 +11,9 @@ int n ;
 vector<vector<int>>g;
 vector<int>subsz;
 vector<int>parent;
+/**
+ * Initialisation Module .
+ */
 void Init(){
     cin>>n;
     g.assign(n+1,{});
@@ -22,6 +25,9 @@ void Init(){
         g[b].push_back(a);
     }
 }
+/**
+ * DFS : Starting at node 1 ;
+ */
 void DFS(int node ,int parent , int depth){
     subsz[node]=1;
     for(auto &child:g[node]){
@@ -36,6 +42,10 @@ void Solve(){
     DFS(1,0,0);
     int par =0 ;
     int cur =1 ;
+    /**
+     * Core Logic to Find Centeroid of a Tree .
+     *  Mental Model  : Go to the heaviest node and check weather its the centroid . 
+     */
     while(true){
         int heavy = -1;
         for(auto &child:g[cur]){
